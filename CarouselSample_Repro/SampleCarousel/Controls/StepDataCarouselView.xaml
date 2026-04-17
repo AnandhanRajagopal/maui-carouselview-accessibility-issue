@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    StepDataCarouselView — reusable carousel control.
+    Mirrors StepDataCarouselView.xaml from XCApp.Easyfit:
+      • CarouselView bound to CarouselItemsSource / ItemPosition / CurrentItem
+      • Custom IndicatorView with VisualStateManager (Normal / Selected dots)
+      • Left / Right arrow buttons toggled by IsPrevButtonVisible / IsNextButtonVisible
+      • CalculatedWidth keeps the IndicatorView sized to the item count
+-->
+<ContentView
+    x:Class="SampleCarousel.Controls.StepDataCarouselView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:control="clr-namespace:SampleCarousel.Controls"
+    xmlns:vm="clr-namespace:SampleCarousel.ViewModels"
+    xmlns:model="clr-namespace:SampleCarousel.Models"
+    x:DataType="vm:StepDataCarouselViewModel">
+
+    <ContentView.Resources>
+
+        <!-- Indicator dot style: Normal = small unselected, Selected = larger selected -->
+        <Style x:Key="IndicatorDotStyle"
+               TargetType="Image">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="WidthRequest"
+                                        Value="6"/>
+                                <Setter Property="HeightRequest"
+                                        Value="6"/>
+                                <Setter Property="Source"
+                                        Value="ellipse_unselected.png"/>
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="WidthRequest"
+                                        Value="8"/>
+                                <Setter Property="HeightRequest"
+                                        Value="8"/>
+                                <Setter Property="Source"
+                                        Value="ellipse_selected.png"/>
+                            </VisualState.Setters>
+                        </VisualState>
+
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <!-- Arrow button shared style -->
+        <Style x:Key="ArrowButtonStyle"
+               TargetType="Button">
+            <Setter Property="HeightRequest"
+                    Value="48"/>
+            <Setter Property="WidthRequest"
+                    Value="48"/>
+            <Setter Property="CornerRadius"
+                    Value="8"/>
+            <Setter Property="BorderWidth"
+                    Value="1"/>
+            <Setter Property="BorderColor"
+                    Value="{AppThemeBinding Light=#757575, Dark=#AAAAAA}"/>
+            <Setter Property="BackgroundColor"
+                    Value="Transparent"/>
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light=#333333, Dark=#EEEEEE}"/>
+            <Setter Property="FontSize"
+                    Value="22"/>
+        </Style>
+
+    </ContentView.Resources>
+
+    <Grid Margin="0,20,0,50"
+          RowDefinitions="Auto,*,68">
+
+        <!-- ── Row 0 : page heading ──────────────────────────────── -->
+        <Label
+            Grid.Row="0"
+            Margin="0,0,0,-12"
+            HorizontalOptions="Center"
+            FontSize="16"
+            Text="Instructions"
+            TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}"
+            VerticalTextAlignment="End"/>
+
+        <!-- ── Row 1 : carousel ──────────────────────────────────── -->
+        <CarouselView
+            x:Name="StepDataCarousel"
+            Grid.Row="1"
+            Scrolled="StepDataCarousel_Scrolled"
+            HorizontalScrollBarVisibility="Never"
+            IndicatorView="IndicatorView"
+            IsBounceEnabled="False"
+            IsScrollAnimated="False"
+            Loop="False"
+            ItemsSource="{Binding CarouselItemsSource}"
+            Position="{Binding ItemPosition}"
+            VerticalScrollBarVisibility="Never">
+
+            <CarouselView.ItemTemplate>
+                <DataTemplate x:DataType="model:StepData">
+                    <control:StepDataTemplate/>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+
+        </CarouselView>
+
+        <!-- ── Row 2 : back / indicator / next ───────────────────── -->
+        <Grid Grid.Row="2"
+              ColumnDefinitions="48,*,48">
+
+            <!-- Back arrow -->
+            <Button
+                Grid.Column="0"
+                AutomationId="TA_Carousel_BackButton"
+                VerticalOptions="End"
+                HorizontalOptions="Start"
+                IsVisible="{Binding IsPrevButtonVisible}"
+                Style="{StaticResource ArrowButtonStyle}"
+                Text="‹"
+                Command="{Binding LeftArrowCommand}"/>
+
+            <!-- Indicator dots -->
+            <IndicatorView
+                x:Name="IndicatorView"
+                Grid.Column="1"
+                Margin="0,20,0,0"
+                HideSingle="True"
+                WidthRequest="{Binding CalculatedWidth}"
+                HorizontalOptions="Center"
+                IndicatorColor="Transparent"
+                InputTransparent="True"
+                SelectedIndicatorColor="Transparent"
+                VerticalOptions="Center">
+                <IndicatorView.IndicatorTemplate>
+                    <DataTemplate>
+                        <Image
+                            Style="{StaticResource IndicatorDotStyle}"
+                            WidthRequest="6"
+                            HeightRequest="6"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"/>
+                    </DataTemplate>
+                </IndicatorView.IndicatorTemplate>
+            </IndicatorView>
+
+            <!-- Next arrow -->
+            <Button
+                Grid.Column="2"
+                AutomationId="TA_Carousel_NextButton"
+                VerticalOptions="End"
+                HorizontalOptions="End"
+                IsVisible="{Binding IsNextButtonVisible}"
+                Style="{StaticResource ArrowButtonStyle}"
+                Text="›"
+                Command="{Binding RightArrowCommand}"/>
+
+        </Grid>
+    </Grid>
+</ContentView>
