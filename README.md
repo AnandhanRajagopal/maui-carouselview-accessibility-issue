@@ -3,5 +3,7 @@ A minimal .NET MAUI reproduction sample demonstrating a bug where CarouselView c
 
 ## Video Reference
 
-https://github.com/user-attachments/assets/40b2ba06-bfbb-4331-9652-ccf7a5a8d2a4
+https://github.com/user-attachments/assets/c6bcff0f-07c9-442a-8b85-55a86df4e4e9
+
+
 
